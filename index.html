@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#5b4a9e">
+  <title>MBTI 人格测试</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Inter:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- 漂浮光斑背景 -->
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+
+  <div class="app">
+
+    <!-- ① 开始屏 -->
+    <section id="start" class="screen active">
+      <div class="glass start-card">
+        <div class="start-badge">人格测试 · MBTI</div>
+        <h1 class="start-title">认识真实的<br><span class="hl">你自己</span></h1>
+        <p class="start-sub">48 道题，五档作答，看清你思考、决策与生活的底层倾向。</p>
+        <ul class="start-meta">
+          <li><span class="m-num">48</span><span class="m-label">道题目</span></li>
+          <li><span class="m-num">~5</span><span class="m-label">分钟</span></li>
+          <li><span class="m-num">16</span><span class="m-label">种人格</span></li>
+        </ul>
+        <button class="btn" id="startBtn">开始测试</button>
+        <p class="start-tip">凭第一直觉作答，结果会更准。</p>
+      </div>
+    </section>
+
+    <!-- ② 答题屏 -->
+    <section id="quiz" class="screen">
+      <header class="quiz-head">
+        <div class="progress"><div class="progress-fill" id="progressFill"></div></div>
+        <div class="quiz-count"><span id="qCurrent">1</span> / 48</div>
+      </header>
+
+      <div class="glass question-card" id="questionCard">
+        <p class="q-index" id="qIndexLabel">QUESTION 01</p>
+        <h2 class="q-text" id="qText">题目加载中…</h2>
+
+        <div class="likert-wrap">
+          <input type="range" min="1" max="5" step="1" value="3" class="likert" id="likert" aria-label="同意程度">
+          <div class="likert-ticks" id="ticks">
+            <span class="tick"></span><span class="tick"></span><span class="tick"></span><span class="tick"></span><span class="tick"></span>
+          </div>
+          <div class="likert-labels">
+            <span>完全不同意</span>
+            <span id="likertNow">中立</span>
+            <span>完全同意</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="quiz-nav">
+        <button class="btn-ghost" id="prevBtn">上一题</button>
+        <button class="btn" id="nextBtn">下一题</button>
+      </div>
+    </section>
+
+    <!-- ③ 结果屏 -->
+    <section id="result" class="screen">
+      <div class="glass glass-2 result-card">
+        <p class="result-eyebrow">你的人格类型是</p>
+        <h2 class="result-type-name" id="rTypeEn">INTJ</h2>
+        <p class="result-type-cn" id="rTypeCn">建筑师</p>
+        <p class="result-tagline" id="rTagline"></p>
+
+        <div class="result-shape" id="rShape"></div>
+
+        <div class="result-dims" id="rDims"></div>
+
+        <div class="result-fn">
+          <div class="result-fn-head">
+            <span class="result-fn-title">认知功能栈</span>
+            <span class="result-fn-note">基于荣格理论 · 由类型决定</span>
+          </div>
+          <div class="result-fn-list" id="rFn"></div>
+        </div>
+
+        <div class="result-tags" id="rTags"></div>
+
+        <p class="result-desc" id="rDesc"></p>
+
+        <button class="btn result-share" id="shareBtn">生成分享卡</button>
+        <button class="btn-ghost result-retry" id="retryBtn">重新测试</button>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- 分享卡浮层 -->
+  <div class="share-overlay" id="shareOverlay">
+    <div class="share-inner">
+      <img id="shareImg" class="share-img" alt="MBTI 分享卡">
+      <p class="share-hint">长按图片保存到相册，或直接截图分享</p>
+      <button class="btn-ghost share-close" id="shareClose">关闭</button>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

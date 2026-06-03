@@ -1,0 +1,6 @@
+# 本地预览/工具配置
+.claude/
+# 与本机 IP 绑定、会变的产物
+qrcode.png
+# 系统文件
+.DS_Store
