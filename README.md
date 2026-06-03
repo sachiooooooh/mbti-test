@@ -18,6 +18,22 @@
 
 ---
 
+## 📱 预览
+
+<div align="center">
+
+| <img src="docs/images/01-start.png" width="220"> | <img src="docs/images/02-quiz.png" width="220"> | <img src="docs/images/03-result.png" width="220"> |
+|:--:|:--:|:--:|
+| **开始** | **答题 · 五档滑块** | **结果 · 专属图形** |
+
+| <img src="docs/images/04-functions.png" width="220"> | <img src="docs/images/05-share.png" width="220"> |
+|:--:|:--:|
+| **认知功能栈** | **一键分享卡** |
+
+</div>
+
+---
+
 ## ✨ 它是什么
 
 一个纯前端的 MBTI 人格测试网页，专为手机端打造。紫蓝渐变 + 磨砂玻璃质感，48 道题用五档滑块作答，最后给出 16 型人格结果，并附三种可视化和一张可分享的卡片。
