@@ -11,6 +11,7 @@
 [![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat-square&logo=javascript&logoColor=black)](#)
 ![No Dependencies](https://img.shields.io/badge/依赖-零-7BE0B0?style=flat-square)
 ![Mobile First](https://img.shields.io/badge/Mobile-First-8B5CF6?style=flat-square)
+[![License: MIT](https://img.shields.io/badge/License-MIT-FB923C.svg?style=flat-square)](./LICENSE)
 
 </div>
 
@@ -100,7 +101,7 @@ mbti-test/
 
 ## 📄 License
 
-可自由使用、修改、分发。
+[MIT](./LICENSE) —— 可自由使用、修改、分发。
 
 ---
 
