@@ -149,10 +149,86 @@ const nextBtn = $('#nextBtn');
 
 const LIKERT_TEXT = ['完全不同意', '不太同意', '中立', '比较同意', '完全同意'];
 
+/* ====================== 本地存储（方向 A：无登录持久化）======================
+   store 是一层抽象：以后接账号(方向 B)时，只需把 read/write 换成读写远端，
+   上层的 saveProgress / saveResult / renderStartEntries 全部不用动。 */
+const STORE_KEY = 'mbti.v1';
+const store = {
+  read() {
+    try { return JSON.parse(localStorage.getItem(STORE_KEY)) || {}; }
+    catch (e) { return {}; }
+  },
+  write(patch) {
+    const data = Object.assign(this.read(), patch);
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(data)); } catch (e) { /* 隐私模式等：静默降级 */ }
+    return data;
+  },
+  clear(keys) {
+    const data = this.read();
+    keys.forEach((k) => delete data[k]);
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(data)); } catch (e) { /* noop */ }
+  }
+};
+
+function saveProgress() {
+  store.write({ progress: { answers: answers.slice(), idx, ts: Date.now() } });
+}
+function saveResult() {
+  store.write({ result: { answers: answers.slice(), type: computeResult().typeKey, ts: Date.now() } });
+  store.clear(['progress']); // 完成即清掉"未测完"进度
+}
+function loadAnswers(arr) {
+  if (!Array.isArray(arr) || arr.length !== TOTAL) return false;
+  for (let i = 0; i < TOTAL; i++) answers[i] = Number(arr[i]) || 3; // 复制进 const 数组，保持引用
+  return true;
+}
+
+/* 开始屏顶部的"继续作答 / 查看上次结果"入口（每次回到开始屏刷新） */
+function renderStartEntries() {
+  const el = $('#startEntries');
+  if (!el) return;
+  el.innerHTML = '';
+  const data = store.read();
+
+  if (data.progress && Array.isArray(data.progress.answers)) {
+    const at = Math.min((data.progress.idx || 0) + 1, TOTAL);
+    const b = document.createElement('button');
+    b.className = 'start-entry resume';
+    b.innerHTML =
+      '<span class="se-main"><span class="se-label">上次没测完</span>' +
+      '<span class="se-value">继续作答 · 第 ' + at + ' / ' + TOTAL + ' 题</span></span>' +
+      '<span class="se-arrow">→</span>';
+    b.addEventListener('click', () => {
+      loadAnswers(data.progress.answers);
+      idx = Math.min(data.progress.idx || 0, TOTAL - 1);
+      renderQuestion();
+      showScreen('quiz');
+    });
+    el.appendChild(b);
+  }
+
+  if (data.result && Array.isArray(data.result.answers)) {
+    const tk = data.result.type;
+    const cn = (TYPES[tk] && TYPES[tk].cn) || '';
+    const b = document.createElement('button');
+    b.className = 'start-entry';
+    b.innerHTML =
+      '<span class="se-main"><span class="se-label">上次结果</span>' +
+      '<span class="se-value">' + tk + ' · ' + cn + '</span></span>' +
+      '<span class="se-arrow">查看 →</span>';
+    b.addEventListener('click', () => {
+      loadAnswers(data.result.answers);
+      renderResult();
+    });
+    el.appendChild(b);
+  }
+}
+
 function showScreen(name) {
   Object.values(screens).forEach((s) => s.classList.remove('active'));
   screens[name].classList.add('active');
   window.scrollTo(0, 0);
+  if (name === 'start') renderStartEntries();
 }
 
 function pad2(n) { return String(n).padStart(2, '0'); }
@@ -182,6 +258,7 @@ function go(next) {
     idx = next;
     renderQuestion();
     card.classList.remove('swap');
+    saveProgress();
   }, 240);
 }
 
@@ -453,22 +530,31 @@ async function drawShareCard() {
 }
 
 /* ====================== 事件 ====================== */
-$('#startBtn').addEventListener('click', () => { idx = 0; renderQuestion(); showScreen('quiz'); });
+// 开始测试 = 全新开始（清空旧进度；上次结果保留，仍可在开始屏回看）
+$('#startBtn').addEventListener('click', () => {
+  answers.fill(3);
+  idx = 0;
+  store.clear(['progress']);
+  renderQuestion();
+  showScreen('quiz');
+});
 
 likert.addEventListener('input', (e) => {
   answers[idx] = Number(e.target.value);
   updateLikertUI(e.target.value);
 });
+likert.addEventListener('change', saveProgress); // 拖动松手即存，刷新不丢
 
 prevBtn.addEventListener('click', () => { if (idx > 0) go(idx - 1); });
 nextBtn.addEventListener('click', () => {
   if (idx < TOTAL - 1) go(idx + 1);
-  else renderResult();
+  else { saveResult(); renderResult(); }
 });
 
 $('#retryBtn').addEventListener('click', () => {
   answers.fill(3);
   idx = 0;
+  store.clear(['progress']); // 保留上次结果，仅清进度
   showScreen('start');
 });
 
@@ -488,3 +574,6 @@ $('#shareClose').addEventListener('click', () => $('#shareOverlay').classList.re
 $('#shareOverlay').addEventListener('click', (e) => {
   if (e.target === $('#shareOverlay')) $('#shareOverlay').classList.remove('show');
 });
+
+/* ====================== 初始化 ====================== */
+renderStartEntries(); // 首屏渲染"继续作答 / 查看上次结果"入口（有存档才出现）

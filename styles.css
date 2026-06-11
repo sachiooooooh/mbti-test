@@ -151,6 +151,24 @@ body {
 .m-label { font-size: 12px; color: var(--text-tertiary); }
 .start-tip { margin-top: 16px; font-size: 13px; color: var(--text-tertiary); }
 
+/* 开始屏：继续作答 / 查看上次结果 入口 */
+.start-entries { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+.start-entry {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  width: 100%; padding: 12px 16px; text-align: left;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+  backdrop-filter: blur(var(--blur)); -webkit-backdrop-filter: blur(var(--blur));
+  color: var(--text); cursor: pointer;
+  transition: background .18s ease, border-color .18s ease, transform .18s ease;
+}
+.start-entry:hover { background: var(--surface-hover); border-color: var(--border-hover); }
+.start-entry:active { transform: scale(.98); }
+.start-entry .se-main { display: flex; flex-direction: column; gap: 3px; }
+.start-entry .se-label { font-size: 11px; color: var(--text-tertiary); }
+.start-entry .se-value { font-size: 15px; font-weight: 600; color: var(--text); }
+.start-entry.resume .se-value { color: var(--accent); }
+.start-entry .se-arrow { font-size: 14px; font-weight: 600; color: var(--accent); white-space: nowrap; }
+
 /* ---------- 答题屏 ---------- */
 .quiz-head { display: flex; align-items: center; gap: 14px; }
 .progress { flex: 1; height: 6px; border-radius: 999px; background: var(--surface-alt); overflow: hidden; }
