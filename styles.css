@@ -228,6 +228,7 @@ body {
 }
 .result-type-cn { font-size: 22px; font-weight: 700; margin-top: 4px; }
 .result-tagline { font-size: 14px; color: var(--text-secondary); margin-top: 10px; line-height: 1.6; }
+.result-date { font-size: 12px; color: var(--text-tertiary); margin-top: 8px; letter-spacing: .02em; }
 
 /* 专属人格图形 */
 .result-shape { display: flex; justify-content: center; margin: 22px 0 6px; }

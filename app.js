@@ -183,6 +183,18 @@ function loadAnswers(arr) {
   return true;
 }
 
+function formatDate(ts, withTime) {
+  const d = new Date(ts);
+  const p = (n) => String(n).padStart(2, '0');
+  let s = d.getFullYear() + '年' + (d.getMonth() + 1) + '月' + d.getDate() + '日';
+  if (withTime) s += ' ' + p(d.getHours()) + ':' + p(d.getMinutes());
+  return s;
+}
+function formatDateShort(ts) {
+  const d = new Date(ts);
+  return (d.getMonth() + 1) + '月' + d.getDate() + '日';
+}
+
 /* 开始屏顶部的"继续作答 / 查看上次结果"入口（每次回到开始屏刷新） */
 function renderStartEntries() {
   const el = $('#startEntries');
@@ -213,7 +225,7 @@ function renderStartEntries() {
     const b = document.createElement('button');
     b.className = 'start-entry';
     b.innerHTML =
-      '<span class="se-main"><span class="se-label">上次结果</span>' +
+      '<span class="se-main"><span class="se-label">上次结果 · ' + formatDateShort(data.result.ts) + '</span>' +
       '<span class="se-value">' + tk + ' · ' + cn + '</span></span>' +
       '<span class="se-arrow">查看 →</span>';
     b.addEventListener('click', () => {
@@ -370,6 +382,10 @@ function renderResult() {
   $('#rTypeCn').textContent = t.cn;
   $('#rTagline').textContent = t.tagline;
   $('#rDesc').textContent = t.desc;
+
+  // 测试时间（新完成时 store.result.ts=刚刚；回看时=当时存的时间）
+  const savedTs = (store.read().result || {}).ts;
+  $('#rDate').textContent = savedTs ? '测于 ' + formatDate(savedTs, true) : '';
 
   renderShape(score, typeKey, t.grad);
   renderFunctions(typeKey);
