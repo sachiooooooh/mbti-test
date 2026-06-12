@@ -39,6 +39,8 @@ body {
   min-height: 100dvh;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
+  touch-action: manipulation;        /* 干掉双击放大（连点误触的元凶）*/
+  -webkit-text-size-adjust: 100%;    /* 禁止文字被自动放大 */
 }
 
 /* ---------- 漂浮光斑 ---------- */
