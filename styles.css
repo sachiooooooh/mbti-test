@@ -176,6 +176,17 @@ body {
 .progress { flex: 1; height: 6px; border-radius: 999px; background: var(--surface-alt); overflow: hidden; }
 .progress-fill { height: 100%; width: 2%; background: var(--accent); border-radius: 999px; transition: width .4s cubic-bezier(.4,0,.2,1); }
 .quiz-count { font-family: 'Outfit'; font-size: 13px; font-weight: 600; letter-spacing: .04em; color: var(--text-tertiary); white-space: nowrap; }
+.quiz-home {
+  flex: none; width: 36px; height: 36px; padding: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 50%;
+  color: var(--text-secondary); cursor: pointer;
+  backdrop-filter: blur(var(--blur)); -webkit-backdrop-filter: blur(var(--blur));
+  transition: background .18s ease, color .18s ease, border-color .18s ease;
+}
+.quiz-home:hover { background: var(--surface-hover); color: var(--text); border-color: var(--border-hover); }
+.quiz-home:active { transform: scale(.94); }
+.quiz-home svg { width: 18px; height: 18px; }
 
 .question-card { padding: 30px 24px 34px; transition: opacity .28s ease, transform .28s ease; }
 .question-card.swap { opacity: 0; transform: translateX(-20px); }

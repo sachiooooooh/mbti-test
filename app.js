@@ -656,6 +656,9 @@ $('#retryBtn').addEventListener('click', () => {
 // 返回主页（不重置，仅回到开始屏；可看存档/历史/重新开始）
 $('#homeBtn').addEventListener('click', () => showScreen('start'));
 
+// 答题中返回主页：先存进度（回来可"继续作答"），再回开始屏
+$('#quizHomeBtn').addEventListener('click', () => { saveProgress(); showScreen('start'); });
+
 // 兜底：切后台/关页面时，若在答题中就立刻存当前题号（手机场景防丢进度）
 document.addEventListener('visibilitychange', () => {
   if (document.hidden && screens.quiz.classList.contains('active')) saveProgress();
