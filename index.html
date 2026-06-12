@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Inter:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css?v=3">
 </head>
 <body>
   <!-- 漂浮光斑背景 -->
@@ -72,6 +72,7 @@
         <p class="result-type-cn" id="rTypeCn">建筑师</p>
         <p class="result-tagline" id="rTagline"></p>
         <p class="result-date" id="rDate"></p>
+        <p class="result-compare" id="rCompare"></p>
 
         <div class="result-shape" id="rShape"></div>
 
@@ -105,6 +106,17 @@
     </div>
   </div>
 
-  <script src="app.js"></script>
+  <!-- 测试历史浮层 -->
+  <div class="hist-overlay" id="historyOverlay">
+    <div class="hist-panel glass">
+      <div class="hist-head">
+        <span class="hist-title">测试历史</span>
+        <button class="hist-x" id="historyClose" aria-label="关闭">✕</button>
+      </div>
+      <div class="hist-list" id="historyList"></div>
+    </div>
+  </div>
+
+  <script src="app.js?v=3"></script>
 </body>
 </html>

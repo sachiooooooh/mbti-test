@@ -229,6 +229,50 @@ body {
 .result-type-cn { font-size: 22px; font-weight: 700; margin-top: 4px; }
 .result-tagline { font-size: 14px; color: var(--text-secondary); margin-top: 10px; line-height: 1.6; }
 .result-date { font-size: 12px; color: var(--text-tertiary); margin-top: 8px; letter-spacing: .02em; }
+.result-compare {
+  display: inline-flex; align-items: center; gap: 7px; white-space: nowrap;
+  margin-top: 12px; padding: 7px 16px;
+  font-size: 13px; color: var(--text-secondary);
+  background: var(--surface-alt); border: 1px solid var(--border); border-radius: 999px;
+}
+.result-compare b { color: var(--text); font-weight: 700; }
+.cmp-dot { width: 7px; height: 7px; border-radius: 50%; flex: none; }
+.cmp-dot.same { background: var(--success); }
+.cmp-dot.diff { background: var(--accent); }
+
+/* 测试历史浮层 */
+.hist-overlay {
+  display: none; position: fixed; inset: 0; z-index: 50;
+  background: rgba(20, 12, 45, 0.72);
+  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  padding: 40px 20px calc(20px + env(safe-area-inset-bottom));
+}
+.hist-overlay.show { display: flex; align-items: center; justify-content: center; }
+.hist-panel { width: 100%; max-width: 400px; max-height: 80dvh; display: flex; flex-direction: column; padding: 20px; }
+.hist-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.hist-title { font-size: 18px; font-weight: 700; color: var(--text); }
+.hist-x {
+  width: 32px; height: 32px; border-radius: 50%; flex: none;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; color: var(--text-secondary);
+  background: var(--surface); border: 1px solid var(--border); cursor: pointer;
+  transition: background .18s ease;
+}
+.hist-x:hover { background: var(--surface-hover); }
+.hist-list { display: flex; flex-direction: column; gap: 10px; overflow-y: auto; }
+.hist-item {
+  display: flex; align-items: center; gap: 12px; width: 100%; text-align: left;
+  padding: 14px 14px; cursor: pointer;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+  transition: background .18s ease, border-color .18s ease, transform .18s ease;
+}
+.hist-item:hover { background: var(--surface-hover); border-color: var(--border-hover); }
+.hist-item:active { transform: scale(.98); }
+.hist-dot { width: 14px; height: 14px; border-radius: 50%; flex: none; box-shadow: 0 0 10px rgba(255,255,255,.25); }
+.hist-main { display: flex; flex-direction: column; gap: 3px; flex: 1; min-width: 0; }
+.hist-date { font-size: 11px; color: var(--text-tertiary); }
+.hist-type { font-size: 15px; font-weight: 600; color: var(--text); }
+.hist-arrow { font-size: 13px; font-weight: 600; color: var(--accent); white-space: nowrap; }
 
 /* 专属人格图形 */
 .result-shape { display: flex; justify-content: center; margin: 22px 0 6px; }

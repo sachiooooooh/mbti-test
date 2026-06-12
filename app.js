@@ -170,12 +170,32 @@ const store = {
   }
 };
 
+let currentResultTs = null; // 当前正在展示的那次结果的时间（新完成=刚刚；回看=当时）
+
 function saveProgress() {
   store.write({ progress: { answers: answers.slice(), idx, ts: Date.now() } });
 }
+function getHistory() {
+  const data = store.read();
+  if (Array.isArray(data.history)) return data.history;
+  if (data.result) return [data.result]; // 兼容旧版单条 result 字段
+  return [];
+}
+function migrateStore() {
+  const data = store.read();
+  if (!Array.isArray(data.history) && data.result) {
+    store.write({ history: [data.result] });
+    store.clear(['result']);
+  }
+}
 function saveResult() {
-  store.write({ result: { answers: answers.slice(), type: computeResult().typeKey, ts: Date.now() } });
-  store.clear(['progress']); // 完成即清掉"未测完"进度
+  const entry = { type: computeResult().typeKey, answers: answers.slice(), ts: Date.now() };
+  const hist = getHistory();
+  hist.unshift(entry);                 // 最新在前
+  if (hist.length > 30) hist.length = 30;
+  store.write({ history: hist });
+  store.clear(['progress', 'result']); // 清进度 + 清旧版字段
+  currentResultTs = entry.ts;
 }
 function loadAnswers(arr) {
   if (!Array.isArray(arr) || arr.length !== TOTAL) return false;
@@ -219,20 +239,79 @@ function renderStartEntries() {
     el.appendChild(b);
   }
 
-  if (data.result && Array.isArray(data.result.answers)) {
-    const tk = data.result.type;
-    const cn = (TYPES[tk] && TYPES[tk].cn) || '';
+  const hist = getHistory();
+  if (hist.length) {
+    const top = hist[0];
+    const cn = (TYPES[top.type] && TYPES[top.type].cn) || '';
     const b = document.createElement('button');
     b.className = 'start-entry';
     b.innerHTML =
-      '<span class="se-main"><span class="se-label">上次结果 · ' + formatDateShort(data.result.ts) + '</span>' +
-      '<span class="se-value">' + tk + ' · ' + cn + '</span></span>' +
+      '<span class="se-main"><span class="se-label">上次结果 · ' + formatDateShort(top.ts) + '</span>' +
+      '<span class="se-value">' + top.type + ' · ' + cn + '</span></span>' +
       '<span class="se-arrow">查看 →</span>';
     b.addEventListener('click', () => {
-      loadAnswers(data.result.answers);
+      loadAnswers(top.answers);
+      currentResultTs = top.ts;
       renderResult();
     });
     el.appendChild(b);
+  }
+
+  if (hist.length >= 2) {
+    const b = document.createElement('button');
+    b.className = 'start-entry';
+    b.innerHTML =
+      '<span class="se-main"><span class="se-label">测试历史</span>' +
+      '<span class="se-value">共 ' + hist.length + ' 次 · 看变化</span></span>' +
+      '<span class="se-arrow">→</span>';
+    b.addEventListener('click', openHistory);
+    el.appendChild(b);
+  }
+}
+
+/* 测试历史浮层：时间线列出每次结果，点任意一条回看 */
+function renderHistory() {
+  const list = $('#historyList');
+  if (!list) return;
+  const hist = getHistory();
+  list.innerHTML = '';
+  hist.forEach((h) => {
+    const cn = (TYPES[h.type] && TYPES[h.type].cn) || '';
+    const grad = (TYPES[h.type] && TYPES[h.type].grad) || ['#8b7bff', '#b07bff'];
+    const item = document.createElement('button');
+    item.className = 'hist-item';
+    item.innerHTML =
+      '<span class="hist-dot" style="background:linear-gradient(135deg,' + grad[0] + ',' + grad[1] + ')"></span>' +
+      '<span class="hist-main"><span class="hist-date">' + formatDate(h.ts, true) + '</span>' +
+      '<span class="hist-type">' + h.type + ' · ' + cn + '</span></span>' +
+      '<span class="hist-arrow">查看 →</span>';
+    item.addEventListener('click', () => {
+      loadAnswers(h.answers);
+      currentResultTs = h.ts;
+      closeHistory();
+      renderResult();
+    });
+    list.appendChild(item);
+  });
+}
+function openHistory() { renderHistory(); $('#historyOverlay').classList.add('show'); }
+function closeHistory() { $('#historyOverlay').classList.remove('show'); }
+
+/* 结果页"较上次"对比：拿当前展示这次的上一条（更早）做对比 */
+function renderCompare(curType) {
+  const el = $('#rCompare');
+  if (!el) return;
+  const hist = getHistory();
+  let i = hist.findIndex((h) => h.ts === currentResultTs);
+  if (i < 0) i = 0;
+  const prev = hist[i + 1];
+  if (!prev) { el.style.display = 'none'; el.innerHTML = ''; return; }
+  el.style.display = '';
+  if (prev.type === curType) {
+    el.innerHTML = '<span class="cmp-dot same"></span>较 ' + formatDateShort(prev.ts) + ' · 类型未变';
+  } else {
+    el.innerHTML = '<span class="cmp-dot diff"></span><b>' + prev.type + '</b> → <b>' + curType +
+      '</b> · 较 ' + formatDateShort(prev.ts);
   }
 }
 
@@ -383,9 +462,9 @@ function renderResult() {
   $('#rTagline').textContent = t.tagline;
   $('#rDesc').textContent = t.desc;
 
-  // 测试时间（新完成时 store.result.ts=刚刚；回看时=当时存的时间）
-  const savedTs = (store.read().result || {}).ts;
-  $('#rDate').textContent = savedTs ? '测于 ' + formatDate(savedTs, true) : '';
+  // 测试时间 + 与上一次的对比
+  $('#rDate').textContent = currentResultTs ? '测于 ' + formatDate(currentResultTs, true) : '';
+  renderCompare(typeKey);
 
   renderShape(score, typeKey, t.grad);
   renderFunctions(typeKey);
@@ -591,5 +670,12 @@ $('#shareOverlay').addEventListener('click', (e) => {
   if (e.target === $('#shareOverlay')) $('#shareOverlay').classList.remove('show');
 });
 
+// 测试历史浮层
+$('#historyClose').addEventListener('click', closeHistory);
+$('#historyOverlay').addEventListener('click', (e) => {
+  if (e.target === $('#historyOverlay')) closeHistory();
+});
+
 /* ====================== 初始化 ====================== */
-renderStartEntries(); // 首屏渲染"继续作答 / 查看上次结果"入口（有存档才出现）
+migrateStore();       // 旧版单条 result → history 数组
+renderStartEntries(); // 首屏渲染入口（有存档才出现）
