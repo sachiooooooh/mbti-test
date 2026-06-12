@@ -653,6 +653,9 @@ $('#retryBtn').addEventListener('click', () => {
   showScreen('start');
 });
 
+// 返回主页（不重置，仅回到开始屏；可看存档/历史/重新开始）
+$('#homeBtn').addEventListener('click', () => showScreen('start'));
+
 // 分享卡
 $('#shareBtn').addEventListener('click', async () => {
   const btn = $('#shareBtn');

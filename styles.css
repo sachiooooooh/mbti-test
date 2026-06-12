@@ -315,6 +315,16 @@ body {
 .result-desc { font-size: 14px; line-height: 1.75; color: var(--text-secondary); text-align: left; }
 .result-share { margin-top: 26px; }
 .result-retry { margin-top: 12px; }
+.home-link {
+  display: flex; align-items: center; justify-content: center; gap: 7px;
+  width: 100%; margin-top: 18px; padding: 8px;
+  background: none; border: none; cursor: pointer;
+  font-family: 'Noto Sans SC', sans-serif; font-size: 14px;
+  color: var(--text-tertiary);
+  transition: color .18s ease;
+}
+.home-link:hover { color: var(--text); }
+.home-link svg { width: 16px; height: 16px; }
 
 /* ---------- 分享卡浮层 ---------- */
 .share-overlay {
